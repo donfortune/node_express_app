@@ -1,9 +1,23 @@
 const fs = require('fs')
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
 
-app.use(express.json()) //
+// middleware
+app.use(morgan('dev'))
+app.use(express.json()) 
+
+//own middleware
+app.use((req, res, next) => {
+    console.log('Hello from the middleware')
+    next()
+})
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString()
+    next()
+})
 
 // Top level code
 const tours = JSON.parse(fs.readFileSync('/Users/mac/Natours-Nodejs/dev-data/data/tours-simple.json'))
@@ -13,10 +27,13 @@ const getAllTours = (req, res) => {
     // res.json({message: 'Hello from the server side!.'})
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: tours.length,
         data: tours
     })
 }
+
+
 
 const getTour = (req, res) => {
     console.log(req.params) 
@@ -87,6 +104,43 @@ const deleteTour = (req, res) => {
         data: null
     })
 }
+
+const getAllUsers = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+
+}
+
+const getUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+
+}
+const deleteUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+
+}
+const updateUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+
+}
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+
+}
 //Define routes
 // app.get('/api/v1/tours', getAllTours)
 
@@ -98,14 +152,56 @@ const deleteTour = (req, res) => {
 
 // app.delete('/api/v1/tours/:id',deleteTour )
 
-app.route('/api/v1/tours')
+const tourRouter = express.Router()
+const userRouter = express.Router()
+
+tourRouter
+    .route('/')
     .get(getAllTours)
     .post(createTour)
 
-app.route('/api/v1/tours/:id')
+// app.route('/api/v1/tours')
+//     .get(getAllTours)
+//     .post(createTour)
+
+    
+tourRouter
+    .route('/:id')
     .get(getTour)
     .delete(deleteTour)
     .patch(updateTour)
+
+// app.route('/api/v1/tours/:id')
+//     .get(getTour)
+//     .delete(deleteTour)
+//     .patch(updateTour)
+
+
+userRouter
+    .route('/')
+    .get(getAllUsers)
+    .post(createUser)
+
+// app.route('/api/v1/users')
+//     .get(getAllUsers)
+//     .post(createUser)
+
+userRouter
+    .route('/:id')
+    .get(getUser)
+    .delete(deleteUser)
+    .patch(updateUser)
+
+
+app.use('/api/v1/tours', tourRouter)
+app.use('/api/v1/users', userRouter)
+
+// app.route('/api/v1/users/:id')
+//     .get(getUser)
+//     .delete(deleteUser)
+//     .patch(updateUser)
+
+
 
 const port = 3000
 app.listen(port, () => {
