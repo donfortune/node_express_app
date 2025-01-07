@@ -1,19 +1,21 @@
 const fs = require('fs')
+const Tour = require('../models/tourModel')
 
-const tours = JSON.parse(fs.readFileSync('/Users/mac/Natours-Nodejs/dev-data/data/tours-simple.json'))
+// const tours = JSON.parse(fs.readFileSync('/Users/mac/Natours-Nodejs/dev-data/data/tours-simple.json'))
 
-exports.checkId = ('id', (req, res, next, val) => {
-    console.log(`Tour id is: ${val}`)
-    const tour = tours.find(element => element.id === parseInt(req.params.id))
-    if (!tour) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        })
-    }
-    next()
 
-})
+// exports.checkId = ('id', (req, res, next, val) => {
+//     console.log(`Tour id is: ${val}`)
+//     const tour = tours.find(element => element.id === parseInt(req.params.id))
+//     if (!tour) {
+//         return res.status(404).json({
+//             status: 'fail',
+//             message: 'Invalid ID'
+//         })
+//     }
+//     next()
+
+// })
 
 //craete a checkbody middleware
 //check if body contains the nbame ad price property

@@ -5,7 +5,7 @@ const router = express.Router()
 const tourController = require('./../controllers/tourController')
 
 //param middleware
-router.param('id', tourController.checkId)
+// router.param('id', tourController.checkId)
 // router.param('name', 'price', tourController.checkBody)
 
 //craete a checkbody middleware
