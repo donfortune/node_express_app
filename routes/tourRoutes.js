@@ -16,7 +16,7 @@ const tourController = require('./../controllers/tourController')
 router
     .route('/')
     .get(tourController.getAllTours)
-    .post(tourController.checkBody, tourController.createTour)
+    .post(tourController.createTour)
 
 // app.route('/api/v1/tours')
 //     .get(getAllTours)

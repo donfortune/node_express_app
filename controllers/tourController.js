@@ -20,71 +20,84 @@ const Tour = require('../models/tourModel')
 //craete a checkbody middleware
 //check if body contains the nbame ad price property
 //if not, send back 400(bad request)
-exports.checkBody = ('name', 'price', (req, res, next) => {
-    const { name, price } = req.body
-    console.log(`name is ${name} and price is ${price}`)
-    if (!name || !price) {
-        return res.status(400).json({
-            status: 'fail',
-            message: 'Missing name or price'
-        })
-    }
-    next()
+// exports.checkBody = ('name', 'price', (req, res, next) => {
+//     const { name, price } = req.body
+//     console.log(`name is ${name} and price is ${price}`)
+//     if (!name || !price) {
+//         return res.status(400).json({
+//             status: 'fail',
+//             message: 'Missing name or price'
+//         })
+//     }
+//     next()
     
     
 
-})
+// })
     
 
 
 // Route Handlers
-exports.getAllTours = (req, res) => {
-    // res.send('This is the home page')
-    // res.json({message: 'Hello from the server side!.'})
-    res.status(200).json({
-        status: 'success',
-        requestedAt: req.requestTime,
-        results: tours.length,
-        data: tours
-    })
+exports.getAllTours = async (req, res) => {
+    try {
+        const newTour = await Tour.find()
+        res.status(200).json({
+            status: 'success',
+            requestedAt: req.requestTime,
+            results: newTour.length,
+            data: newTour
+        })
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        })
+    }
 }
 
 
 
-exports.getTour = (req, res) => {
-    console.log(req.params) 
-    const tour = tours.find(element => element.id === parseInt(req.params.id))
+exports.getTour = async (req, res) => {
+    // console.log(req.params) 
+    // const tour = tours.find(element => element.id === parseInt(req.params.id))
     // if (!tour) {
     //     return res.status(404).json({
     //         status: 'fail',
     //         message: 'Invalid ID'
     //     })
     // }
-    res.status(200).json({
-        status: 'success',
-        // results: tours.length,
-        data: tour
-    })
+    try {
+        const tour = await Tour.findById(req.params.id)
+        res.status(200).json({
+            status: 'success',
+            data: tour
+        })
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        })
+    }
+
 }
 
-exports.createTour = (req, res) => {
-    // console.log(req.body)
-    const newId = tours[tours.length - 1].id + 1 //
-    const newTour = Object.assign({ id: newId}, req.body)
-
-    tours .push(newTour)
-    fs.writeFile('/Users/mac/Natours-Nodejs/dev-data/data/tours-simple.json', JSON.stringify(tours), (err) => {
-        if (err) {
-
-        }
+exports.createTour = async (req, res) => {
+    try {
+        const newTour = await Tour.create(req.body)
         res.status(201).json({
-            status: 'Success',
+            status: 'success',
             data: {
                 tour: newTour
             }
         })
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message
+        })
+    }
 
-    })
+    
 }
 
 exports.updateTour = (req, res) => {
