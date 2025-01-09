@@ -40,6 +40,18 @@ const Tour = require('../models/tourModel')
 // Route Handlers
 exports.getAllTours = async (req, res) => {
     try {
+        // filtering
+        console.log(req.query)
+        const queryObj = req.query
+        // const tours = await Tour.find(queryObj)
+        // const tours = await Tour.find(queryObj)
+        // const tours = await Tour.find({
+        //     duration: 5,
+            // difficulty: 'easy'
+        // })
+        const tours = await Tour.find(queryObj)
+
+        // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
         const newTour = await Tour.find()
         res.status(200).json({
             status: 'success',
@@ -67,6 +79,7 @@ exports.getTour = async (req, res) => {
     //     })
     // }
     try {
+        
         const tour = await Tour.findById(req.params.id)
         res.status(200).json({
             status: 'success',
