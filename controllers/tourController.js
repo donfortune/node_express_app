@@ -42,17 +42,19 @@ exports.getAllTours = async (req, res) => {
     try {
         // filtering
         console.log(req.query)
-        const queryObj = req.query
+        const queryObj = { ...req.query }
+        console.log(queryObj)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find({
         //     duration: 5,
             // difficulty: 'easy'
         // })
-        const tours = await Tour.find(queryObj)
+        const newTour = await Tour.find(queryObj)
+        console.log(newTour)
 
         // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
-        const newTour = await Tour.find()
+        // const newTour = await Tour.find()
         res.status(200).json({
             status: 'success',
             requestedAt: req.requestTime,
@@ -60,6 +62,7 @@ exports.getAllTours = async (req, res) => {
             data: newTour
         })
     } catch (err) {
+        console.log(err)
         res.status(404).json({
             status: 'fail',
             message: err
