@@ -40,23 +40,38 @@ const Tour = require('../models/tourModel')
 // Route Handlers
 exports.getAllTours = async (req, res) => {
     try {
-        // filtering
+        // ILTERING
+
+
+        // Build a query
         console.log(req.query)
         const queryObj = { ...req.query } //create a copy of the query object
         const excludeFields = ['page', 'sort', 'limit', 'fields'] //fields to exclude from the query
         excludeFields.forEach(el => delete queryObj[el]) //delete the  excluded fields from the query object
-        console.log(queryObj, req.query)
+        // console.log(queryObj, req.query)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find({
         //     duration: 5,
             // difficulty: 'easy'
         // })
-        const newTour = await Tour.find(queryObj)
-        console.log(newTour)
+        
 
+        // ADVANCED FILTERING
+        let queryStr = JSON.stringify(queryObj)
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
+        console.log(JSON.parse(queryStr))
+
+        // Execute the query
+        const query =  Tour.find(JSON.parse(queryStr)) // return a query object
+        const newTour = await query // 
+        
+
+        // { difficulty: 'easy', duration: { gte: '5' } }
         // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
         // const newTour = await Tour.find()
+
+        // Send response
         res.status(200).json({
             status: 'success',
             requestedAt: req.requestTime,
