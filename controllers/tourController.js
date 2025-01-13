@@ -81,7 +81,7 @@ exports.getAllTours = async (req, res) => {
             query = query.sort(sortBy)
             
         } else {
-            query = query.sort('-createdAt')
+            query = query.sort('-createdAt') // default sort behavior
         }
 
         const newTour = await query 
