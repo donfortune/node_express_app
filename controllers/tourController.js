@@ -92,6 +92,24 @@ exports.getAllTours = async (req, res) => {
             query = query.select('-__v') // exclude the __v field
         }
 
+        // 5. PAGINATION
+        // page=2&limit=10, 1-10, page 1, 11-20, page 2, 21-30
+        // const page = parseInt(req.query.page) // convert the page number to an integer. the page number is the page to show
+        // const limit = parseInt(req.query.limit) || 100 // convert the limit to an integer. the limit is the number of results to show per page
+        // const skip = (page - 1) * limit
+        // query = query.skip(10).limit(10)
+
+        const page = req.query.page * 1 || 1 // convert the page number to an integer. the page number is the page to show
+        const limit = req.query.limit * 1 || 100 // convert the limit to an integer. the limit is the number of results to show per page
+        const skip = (page - 1) * limit
+        query = query.skip(skip).limit(limit)
+
+        // if (req.query.page) {
+        //     const numTours = await Tour.countDocuments()
+        //     if (skip >= numTours) throw new Error('This page does not exist')
+        // }
+
+
 
         const newTour = await query 
 
