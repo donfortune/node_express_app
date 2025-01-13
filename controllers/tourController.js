@@ -42,8 +42,10 @@ exports.getAllTours = async (req, res) => {
     try {
         // filtering
         console.log(req.query)
-        const queryObj = { ...req.query }
-        console.log(queryObj)
+        const queryObj = { ...req.query } //create a copy of the query object
+        const excludeFields = ['page', 'sort', 'limit', 'fields'] //fields to exclude from the query
+        excludeFields.forEach(el => delete queryObj[el]) //delete the  excluded fields from the query object
+        console.log(queryObj, req.query)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find(queryObj)
         // const tours = await Tour.find({
