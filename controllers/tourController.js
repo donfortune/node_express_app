@@ -40,11 +40,12 @@ const Tour = require('../models/tourModel')
 // Route Handlers
 exports.getAllTours = async (req, res) => {
     try {
-        // ILTERING
+        //1.  FILTERING
 
 
         // Build a query
         console.log(req.query)
+        console.log(req.query.sort)
         const queryObj = { ...req.query } //create a copy of the query object
         const excludeFields = ['page', 'sort', 'limit', 'fields'] //fields to exclude from the query
         excludeFields.forEach(el => delete queryObj[el]) //delete the  excluded fields from the query object
@@ -57,19 +58,33 @@ exports.getAllTours = async (req, res) => {
         // })
         
 
-        // ADVANCED FILTERING
-        let queryStr = JSON.stringify(queryObj)
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
-        console.log(JSON.parse(queryStr))
+        //2. ADVANCED FILTERING
+        let queryStr = JSON.stringify(queryObj) // convert the query object to a string so we can manipulate it
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`) // replace the query object with the query object with the $ sign
+        console.log(JSON.parse(queryStr)) // convert the string back to an object
 
         // Execute the query
-        const query =  Tour.find(JSON.parse(queryStr)) // return a query object
-        const newTour = await query // 
+        let query =  Tour.find(JSON.parse(queryStr)) // return a query object
+        
         
 
         // { difficulty: 'easy', duration: { gte: '5' } }
         // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
         // const newTour = await Tour.find()
+
+        //3. SORTING
+        if (req.query.sort) {
+            // query = query.sort(req.query.sort)
+            // sort by multiple fields
+            const sortBy = req.query.sort.split(',').join(' ')
+            console.log(sortBy)
+            query = query.sort(sortBy)
+            
+        } else {
+            query = query.sort('-createdAt')
+        }
+
+        const newTour = await query 
 
         // Send response
         res.status(200).json({
