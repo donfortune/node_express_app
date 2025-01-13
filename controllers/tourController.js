@@ -84,6 +84,15 @@ exports.getAllTours = async (req, res) => {
             query = query.sort('-createdAt') // default sort behavior
         }
 
+        // 4. LIMITING - allow user to limit the number of results
+        if (req.query.fields) {
+            const fields = req.query.fields.split(',').join(' ')
+            query = query.select(fields)
+        } else {
+            query = query.select('-__v') // exclude the __v field
+        }
+
+
         const newTour = await query 
 
         // Send response
