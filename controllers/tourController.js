@@ -17,6 +17,14 @@ const Tour = require('../models/tourModel')
 
 // })
 
+exports.getFavoriteTours = (req, res, next) => {
+    const limit = req.query.limit * 1 || 5
+    req.query.limit = limit
+    req.query.sort = '-ratingsAverage,price'
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty'
+    next()
+}
+
 //craete a checkbody middleware
 //check if body contains the nbame ad price property
 //if not, send back 400(bad request)
@@ -128,6 +136,8 @@ exports.getAllTours = async (req, res) => {
         })
     }
 }
+
+
 
 
 

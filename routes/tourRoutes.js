@@ -13,10 +13,17 @@ const tourController = require('./../controllers/tourController')
 //if not, send back 400(bad request)
 
 // Routes
+
+// Aliase route - route fir popular requests
+router
+    .route('/top-5-cheap')
+    .get(tourController.getFavoriteTours, tourController.getAllTours)
+
 router
     .route('/')
     .get(tourController.getAllTours)
     .post(tourController.createTour)
+    .get(tourController.getFavoriteTours)
 
 // app.route('/api/v1/tours')
 //     .get(getAllTours)
