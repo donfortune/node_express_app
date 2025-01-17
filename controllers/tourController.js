@@ -334,3 +334,47 @@ exports.deleteTour = async (req, res) => {
     // tours.splice(index, 1)
     
 }
+
+// Aggregation pipeline - used for processing data from collection(DB) to get aggregated results like averages, sums, etc
+
+exports.getTourStats = async (req, res) => {
+    try {
+        const stats = await Tour.aggregate([
+            {
+                $match: { ratingsAverage: { $gte: 4.5 } }
+            }, // select only tours with ratingsAverage greater than or equal to 4.5
+            {
+                $group: {
+                    // _id: null, // group all the selected tours
+                    _id: { $toUpper: '$difficulty'}, // group the selected tours by difficulty
+                    // numTours: { $sum: 1 },
+                    // numRatings: { $sum: '$ratingsQuantity' },
+                    numRatings: { $sum: '$ratingsQuantity' }, // calculate the number of ratings
+                    numTours: { $sum: 1 }, // calculate the number of tours
+                    avgRating: { $avg: '$ratingsAverage' }, // calculate the average rating
+                    avgPrice: { $avg: '$price' }, // calculate the average price
+                    minPrice: { $min: '$price' }, // calculate the minimum price
+                    maxPrice: { $max: '$price' } // calculate the maximum price
+                } // group the selected tours by difficulty and calculate the number of tours, number of ratings, average rating, average price, minimum price and maximum price
+            },
+            {
+                $sort: { avgPrice: 1 } // sort the results by average price in ascending order
+            }
+            // {
+            //     $match: { _id: { $ne: 'EASY' } } // exclude tours with difficulty of easy
+            // }
+        ])
+        res.status(200).json({
+            status: 'success',
+            data: {
+                stats
+            }
+        })
+        
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        })
+    }
+}
