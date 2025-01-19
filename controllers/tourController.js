@@ -374,7 +374,61 @@ exports.getTourStats = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: 'fail',
-            message: err
+            message: err 
+        })
+    }
+}
+
+// Using aggregation pipeline to solve real business problems - get the busiest month of the year
+
+exports.getMonthlyPlan = async (req, res) => {
+    try {
+        const year = req.params.year * 1 // convert the year to a number
+        console.log(year)
+        const plan = await Tour.aggregate([
+            {
+                $unwind: '$startDates' // deconstruct the startDate array and create a document for each element in the array
+            },
+            {
+                $match: {
+                    startDates: {
+                        $gte: new Date(`${year}-01-01`), // get all tours that start in the year
+                        $lte: new Date(`${year}-12-31`) // get all tours that end in the year
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$startDates' }, // group the tours by month
+                    numTourStarts: { $sum: 1 }, // count the number of tours that start in each month
+                    tours: { $push: '$name' } // create an array of the names of tours that start in each month
+                }
+            },
+            {
+                $addFields: { month: '$_id' } // add a field called month to the results
+            },
+            {
+                $project: {
+                _id: 0 // exclude the _id field from the results
+                }
+            },
+            {
+                $sort: { numTourStarts: -1 } // sort the results by the number of tours that start in each month in descending order
+            },
+            {
+                $limit: 6 // limit the results to 6
+            }
+        ])
+        res.status(200).json({
+            status: 'success',
+            data: {
+                plan
+            }
+        })
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            message: err 
         })
     }
 }
